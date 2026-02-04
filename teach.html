@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Sliding Slideshow</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#111;
+  font-family:Arial;
+}
+
+/* ===== SLIDER ===== */
+.slider{
+  position:relative;
+  width:90%;
+  max-width:700px;
+  height:400px;
+  overflow:hidden;
+  border-radius:10px;
+}
+
+/* ===== SLIDES CONTAINER (for sliding) ===== */
+.slides{
+  display:flex;
+  height:100%;
+  transition:transform 0.5s ease-in-out;
+}
+
+/* each slide */
+.slide{
+  min-width:100%;
+  height:100%;
+}
+
+.slide img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* ===== BUTTONS ===== */
+button{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(0,0,0,0.5);
+  color:white;
+  border:none;
+  font-size:28px;
+  padding:10px 15px;
+  cursor:pointer;
+  border-radius:5px;
+  z-index:2;
+}
+
+.prev{ left:10px; }
+.next{ right:10px; }
+
+/* ===== DOTS ===== */
+.dots{
+  position:absolute;
+  bottom:10px;
+  width:100%;
+  text-align:center;
+}
+
+.dot{
+  height:12px;
+  width:12px;
+  margin:0 5px;
+  display:inline-block;
+  background:#bbb;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.dot.active{
+  background:white;
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="slider" id="slider">
+
+  <div class="slides" id="slides">
+    <div class="slide"><img src="https://picsum.photos/id/1015/800/400"></div>
+    <div class="slide"><img src="https://picsum.photos/id/1016/800/400"></div>
+    <div class="slide"><img src="https://picsum.photos/id/1018/800/400"></div>
+    <div class="slide"><img src="https://picsum.photos/id/1020/800/400"></div>
+  </div>
+
+  <button class="prev">&#10094;</button>
+  <button class="next">&#10095;</button>
+
+  <div class="dots"></div>
+</div>
+
+
+<script>
+const slidesContainer = document.getElementById("slides");
+const slides = document.querySelectorAll(".slide");
+const prev = document.querySelector(".prev");
+const next = document.querySelector(".next");
+const dotsContainer = document.querySelector(".dots");
+const slider = document.getElementById("slider");
+
+let index = 0;
+let interval;
+
+/* ===== CREATE DOTS ===== */
+slides.forEach((_, i)=>{
+  const dot = document.createElement("span");
+  dot.classList.add("dot");
+  if(i===0) dot.classList.add("active");
+
+  dot.addEventListener("click",()=>goToSlide(i));
+  dotsContainer.appendChild(dot);
+});
+
+const dots = document.querySelectorAll(".dot");
+
+/* ===== SHOW SLIDE ===== */
+function showSlide(){
+  slidesContainer.style.transform = `translateX(-${index * 100}%)`;
+
+  dots.forEach(d=>d.classList.remove("active"));
+  dots[index].classList.add("active");
+}
+
+/* ===== CONTROLS ===== */
+function nextSlide(){
+  index = (index + 1) % slides.length;
+  showSlide();
+}
+
+function prevSlide(){
+  index = (index - 1 + slides.length) % slides.length;
+  showSlide();
+}
+
+function goToSlide(i){
+  index = i;
+  showSlide();
+}
+
+next.addEventListener("click", nextSlide);
+prev.addEventListener("click", prevSlide);
+
+/* ===== AUTO SLIDE ===== */
+function startAuto(){
+  interval = setInterval(nextSlide, 3000);
+}
+
+function stopAuto(){
+  clearInterval(interval);
+}
+
+startAuto();
+
+/* ===== PAUSE ON HOVER ===== */
+slider.addEventListener("mouseenter", stopAuto);
+slider.addEventListener("mouseleave", startAuto);
+
+/* ===== TOUCH SWIPE ===== */
+let startX = 0;
+
+slider.addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+
+slider.addEventListener("touchend", e=>{
+  let endX = e.changedTouches[0].clientX;
+  let diff = startX - endX;
+
+  if(diff > 50) nextSlide();
+  if(diff < -50) prevSlide();
+});
+</script>
+
+</body>
+</html>
