@@ -1,6 +1,40 @@
 
 
 
+//--------------Hamburger Menu-----------//
+
+const hamburger = document.querySelector(".hamburger");
+const nav = document.querySelector(".nav");
+
+hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    nav.classList.toggle("active");
+})
+
+
+document.querySelectorAll(".nav").forEach(n => n.
+    addEventListener("click", () => {
+    hamburger.classList.remove("active");
+    nav.classList.remove("active");
+}))
+
+
+
+// Nav-bar
+
+const links = document.querySelectorAll(".nav li");
+
+links.forEach(link => {
+  link.addEventListener("click", function () {
+    links.forEach(l => l.classList.remove("active"));
+    this.classList.add("active");
+  });
+});
+
+
+
+
+
 // Slide-Show
 
 const slidesContainer = document.getElementById("slides");
